@@ -3,20 +3,13 @@ import {
   Menu, X, Linkedin, Mail, Phone, ExternalLink, 
   Database, Server, Code, Shield, Cpu, Workflow, 
   Award, Terminal, ChevronRight, MapPin, 
-  Sparkles, Bot, Loader2
+  MessageCircle
 } from 'lucide-react';
-import ReactMarkdown from 'react-markdown';
 
 const App = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
   const [scrolled, setScrolled] = useState(false);
-  
-  // AI Feature State
-  const [isAIModalOpen, setIsAIModalOpen] = useState(false);
-  const [aiInput, setAiInput] = useState('');
-  const [aiResponse, setAiResponse] = useState('');
-  const [isGenerating, setIsGenerating] = useState(false);
 
   // Handle scroll effects
   useEffect(() => {
@@ -45,51 +38,6 @@ const App = () => {
     const element = document.getElementById(id);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
-
-  const generateAIStrategy = async () => {
-    if (!aiInput.trim()) return;
-    
-    setIsGenerating(true);
-    setAiResponse('');
-    
-    try {
-      // NOTE: For production, use import.meta.env.VITE_GEMINI_API_KEY
-      // You will need to create an .env file locally.
-      const apiKey = ""; 
-      const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            contents: [{
-              parts: [{
-                text: `You are Abdulraheem's AI Assistant, an expert in Digital Transformation and Automation Engineering. 
-                
-                The user has the following business problem or process they want to improve: 
-                "${aiInput}"
-                
-                Please act as a Senior Automation Consultant and provide a concise, technical strategic recommendation (max 150 words). 
-                Suggest specific tools from Abdulraheem's stack (n8n, Python, MERN, OpenAI API, AWS, SQL) to solve this.
-                Format the response with Markdown, using bolding for key tools.`
-              }]
-            }]
-          })
-        }
-      );
-
-      const data = await response.json();
-      const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
-      setAiResponse(text || "I apologize, but I couldn't generate a strategy at this moment. Please try again.");
-    } catch (error) {
-      console.error("Error generating strategy:", error);
-      setAiResponse("An error occurred while connecting to the AI service. Please check your connection.");
-    } finally {
-      setIsGenerating(false);
     }
   };
 
@@ -174,12 +122,14 @@ const App = () => {
               Specializing in MERN stack, n8n orchestration, and integrating AI agents into real-world applications.
             </p>
             <div className="flex flex-wrap gap-4">
-              <button 
-                onClick={() => setIsAIModalOpen(true)}
+              <a 
+                href="https://wa.link/oy27cu"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="px-6 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-slate-950 font-bold rounded-lg transition-all flex items-center gap-2 shadow-lg shadow-emerald-500/25"
               >
-                <Sparkles size={18} /> Get AI Strategy
-              </button>
+                <MessageCircle size={18} /> Contact via WhatsApp
+              </a>
               <button 
                 onClick={() => scrollTo('projects')}
                 className="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-white font-medium rounded-lg transition-all border border-slate-700 flex items-center gap-2"
@@ -231,91 +181,6 @@ const App = () => {
           </div>
         </div>
       </section>
-
-      {/* AI Strategy Modal */}
-      {isAIModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-sm">
-          <div className="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
-            <div className="p-6 border-b border-slate-800 flex justify-between items-center bg-slate-900">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-emerald-500/10 rounded-lg text-emerald-400">
-                  <Bot size={24} />
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold text-white">AI Automation Architect</h3>
-                  <p className="text-xs text-slate-400">Powered by Gemini 2.5 Flash</p>
-                </div>
-              </div>
-              <button 
-                onClick={() => setIsAIModalOpen(false)}
-                className="text-slate-400 hover:text-white transition-colors"
-              >
-                <X size={24} />
-              </button>
-            </div>
-            
-            <div className="p-6 overflow-y-auto flex-grow">
-              {!aiResponse ? (
-                <>
-                  <p className="text-slate-300 mb-4">
-                    Describe a repetitive task or business process you want to automate. I will generate a technical strategy using my preferred stack (n8n, Python, AI).
-                  </p>
-                  <div className="space-y-4">
-                    <textarea
-                      value={aiInput}
-                      onChange={(e) => setAiInput(e.target.value)}
-                      placeholder="Example: I run a real estate agency and spend 2 hours a day manually replying to lead emails and scheduling viewings..."
-                      className="w-full h-32 bg-slate-950 border border-slate-700 rounded-xl p-4 text-slate-200 focus:outline-none focus:border-emerald-500 transition-colors resize-none placeholder:text-slate-600"
-                    />
-                    <div className="flex justify-end">
-                      <button
-                        onClick={generateAIStrategy}
-                        disabled={!aiInput.trim() || isGenerating}
-                        className="px-6 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-medium rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-                      >
-                        {isGenerating ? (
-                          <>
-                            <Loader2 className="animate-spin" size={18} /> Analyzing...
-                          </>
-                        ) : (
-                          <>
-                            <Sparkles size={18} /> Generate Strategy
-                          </>
-                        )}
-                      </button>
-                    </div>
-                  </div>
-                </>
-              ) : (
-                <div className="space-y-4">
-                  <div className="flex items-start gap-4">
-                    <div className="min-w-[40px] h-10 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-400">
-                      <Bot size={20} />
-                    </div>
-                    <div className="bg-slate-950 border border-slate-800 rounded-xl p-6 text-slate-300 leading-relaxed prose prose-invert prose-emerald max-w-none">
-                       <ReactMarkdown>{aiResponse}</ReactMarkdown>
-                    </div>
-                  </div>
-                  <div className="flex justify-end gap-3 pt-4">
-                    <button
-                      onClick={() => setAiResponse('')}
-                      className="text-sm text-slate-400 hover:text-white underline"
-                    >
-                      Ask another question
-                    </button>
-                    <button
-                      onClick={() => setIsAIModalOpen(false)}
-                      className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white text-sm font-medium rounded-lg transition-colors"
-                    >
-                      Close
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* About Section */}
       <section id="about" className="py-24 bg-slate-900/50">
